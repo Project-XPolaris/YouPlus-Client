@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class AppCard extends StatefulWidget {
   final String name;
   final String status;
+  final String id;
   final Function onStop;
   final Function onStart;
-  const AppCard({Key? key,required this.name,required this.status,required this.onStop,required this.onStart}) : super(key: key);
+  const AppCard({Key? key,required this.name,required this.status,required this.onStop,required this.onStart,required this.id}) : super(key: key);
   @override
   _AppCardState createState() => _AppCardState();
 }
@@ -33,10 +34,17 @@ class _AppCardState extends State<AppCard> {
                         style: TextStyle(
                             fontWeight: FontWeight.w500, fontSize: 18),
                       ),
-                      Text("Service")
+                      Text(widget.id,style: TextStyle(color: Colors.black54),)
                     ])),
                 PopupMenuButton<String>(
-                  onSelected: (String result) { setState(() {  }); },
+                  onSelected: (String result) {
+                    if (result == "start") {
+                      widget.onStart();
+                    }
+                    if (result == "stop") {
+                      widget.onStop();
+                    }
+                  },
                   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                     const PopupMenuItem<String>(
                       value: "start",

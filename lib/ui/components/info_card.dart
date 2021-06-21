@@ -14,6 +14,7 @@ class _InfoCardState extends State<InfoCard> {
   Widget build(BuildContext context) {
     return Card(
       child: Container(
+        height: 96,
         width: double.infinity,
         margin: EdgeInsets.only(right: 16),
         padding: EdgeInsets.all(16),
@@ -21,7 +22,7 @@ class _InfoCardState extends State<InfoCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(widget.label, style: TextStyle(color: Colors.black54),),
-            Text(widget.value, style: TextStyle(color: Colors.black87,fontSize: 22),)
+            Text(widget.value, style: TextStyle(color: Colors.black87,fontSize: 18),)
           ],
         ),
       ),

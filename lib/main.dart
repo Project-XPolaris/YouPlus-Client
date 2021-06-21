@@ -1,22 +1,9 @@
-
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:youplus/ui/home/home.dart';
-import 'package:youplus/ui/layout/index.dart';
+import 'package:youplus/ui/start/start.dart';
 
 void main() {
   runApp(MyApp());
-
-
-    doWhenWindowReady(() {
-      final win = appWindow;
-      final initialSize = Size(1280, 720);
-      win.size = initialSize;
-      win.alignment = Alignment.center;
-      win.title = "Custom window with Flutter";
-      win.show();
-    });
-
 }
 
 class MyApp extends StatelessWidget {
@@ -36,11 +23,10 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.green,
+        primaryColor: Colors.green,
+        accentColor: Colors.yellow,
       ),
-      home: Layout(
-        child: HomePage(),
-      ),
+      home: StartPage(),
     );
   }
 }

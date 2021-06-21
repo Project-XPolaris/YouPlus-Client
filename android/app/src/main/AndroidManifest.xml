@@ -2,6 +2,7 @@
     package="com.projectxpolaris.youplus">
    <application
         android:label="youplus"
+       android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youplus/ui/home/pages/apps/apps.dart';
+import 'package:youplus/ui/home/pages/device/device.dart';
 import 'package:youplus/ui/home/pages/folder/folder.dart';
 import 'package:youplus/ui/home/pages/index/index.dart';
 import 'package:youplus/ui/home/provider.dart';
@@ -18,7 +19,6 @@ class _HomePageState extends State<HomePage> {
     return ChangeNotifierProvider<HomeProvider>(
         create: (_) => HomeProvider(),
     child: Consumer<HomeProvider>(builder: (context, provider, child) {
-      print( MediaQuery.of(context).size.width);
       return Scaffold(
         appBar: AppBar(title: Text("YouPlus"),elevation: 0,),
         bottomNavigationBar: BottomNavigationBar(
@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
             BottomNavigationBarItem(icon: Icon(Icons.home),label: "Home"),
             BottomNavigationBarItem(icon: Icon(Icons.apps),label: "Apps"),
             BottomNavigationBarItem(icon: Icon(Icons.folder),label: "Folder"),
+            BottomNavigationBarItem(icon: Icon(Icons.wysiwyg_outlined),label: "Device"),
           ],
         ),
         body: IndexedStack(
@@ -37,7 +38,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             HomeIndex(),
             HomeApps(),
-            HomeFolder()
+            HomeFolder(),
+            HomeDevicePage()
           ],
         ),
       );

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FolderCard extends StatefulWidget {
-  const FolderCard({Key? key}) : super(key: key);
+  final  String name;
+  FolderCard({Key? key,required this.name}) : super(key: key);
 
   @override
   _FolderCardState createState() => _FolderCardState();
@@ -23,7 +24,7 @@ class _FolderCardState extends State<FolderCard> {
                 ),
                 Expanded(
                     child: Container(
-                        child: Text("Folder name"),
+                        child: Text(widget.name),
                         margin: EdgeInsets.only(left: 16)))
               ],
             )

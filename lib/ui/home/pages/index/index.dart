@@ -16,7 +16,52 @@ class _HomeIndexState extends State<HomeIndex> {
     return ChangeNotifierProvider<HomeIndexProvider>(
         create: (_) => HomeIndexProvider(),
         child: Consumer<HomeIndexProvider>(builder: (context, provider, child) {
+          provider.refreshDeviceInfo();
           Size size = MediaQuery.of(context).size;
+          _renderDeviceInfo(){
+            var info = provider.deviceInfo;
+            if (info != null) {
+             return Wrap(
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minWidth: 72, maxWidth: 240, minHeight: 72
+                    ),
+                    child: InfoCard(
+                      label: "Hostname",
+                      value: info.hostname,
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minWidth: 72, maxWidth: 240, minHeight: 72
+                    ),
+                    child: InfoCard(
+                      label: "Board",
+                      value: info.board,
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minWidth: 72, maxWidth: 240, minHeight: 72),
+                    child: InfoCard(
+                      label: "CPU",
+                      value: info.cpu,
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minWidth: 72, maxWidth: 240, minHeight: 72),
+                    child: InfoCard(
+                      label: "OS",
+                      value: info.os,
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Container();
+          }
           return Container(
             color: Color(0xFFEEEEEE),
             width: double.infinity,
@@ -34,55 +79,11 @@ class _HomeIndexState extends State<HomeIndex> {
                         fontSize: 32),
                   ),
                 ),
-                Wrap(
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: 72, maxWidth: 240, minHeight: 72
-                      ),
-                      child: InfoCard(
-                        label: "Apps",
-                        value: "123",
-                      ),
-                    ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: 72, maxWidth: 240, minHeight: 72
-                      ),
-                      child: InfoCard(
-                        label: "Disks",
-                        value: "8",
-                      ),
-                    ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: 72, maxWidth: 240, minHeight: 72),
-                      child: InfoCard(
-                        label: "Storage",
-                        value: "8",
-                      ),
-                    ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: 72, maxWidth: 240, minHeight: 72),
-                      child: InfoCard(
-                        label: "Folders",
-                        value: "8",
-                      ),
-                    ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: 72, maxWidth: 240, minHeight: 72),
-                      child: InfoCard(
-                        label: "Users",
-                        value: "8",
-                      ),
-                    ),
-                  ],
-                )
+               _renderDeviceInfo()
               ],
             ),
           );
+
         }));
   }
 }
