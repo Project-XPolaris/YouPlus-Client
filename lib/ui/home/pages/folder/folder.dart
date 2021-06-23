@@ -41,11 +41,10 @@ class _HomeFolderState extends State<HomeFolder> {
             child: Container(
               color: Color(0xFFEEEEEE),
               width: double.infinity,
-              padding: EdgeInsets.all(16.0),
               child: ListView(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 16),
+                    margin: EdgeInsets.all(16),
                     child: Text(
                       "Folders",
                       style: TextStyle(
@@ -54,10 +53,13 @@ class _HomeFolderState extends State<HomeFolder> {
                           fontSize: 32),
                     ),
                   ),
-                  Wrap(
-                    children: [
-                      ..._renderCards()
-                    ],
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Wrap(
+                      children: [
+                        ..._renderCards()
+                      ],
+                    ),
                   )
                 ],
               ),

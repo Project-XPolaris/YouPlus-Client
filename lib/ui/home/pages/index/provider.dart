@@ -4,6 +4,7 @@ import 'package:youplus/api/info.dart';
 
 class HomeIndexProvider extends ChangeNotifier {
   DeviceInfo? deviceInfo;
+  NasInfo? nasInfo;
   bool firstInfo = true;
   refreshDeviceInfo() async {
     if (!firstInfo) {
@@ -11,6 +12,9 @@ class HomeIndexProvider extends ChangeNotifier {
     }
     firstInfo = false;
     this.deviceInfo = await ApiClient().fetchDeviceInfo();
+    notifyListeners();
+
+    nasInfo = await ApiClient().fetchNasInfo();
     notifyListeners();
   }
 }

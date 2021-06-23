@@ -85,5 +85,9 @@ class ApiClient {
     var response = await _dio.post("/os/reboot");
     return BaseResponse.fromJson(response.data);
   }
+  Future<NasInfo> fetchNasInfo() async {
+    var response = await _dio.get("/device/info");
+    return NasInfo.fromJson(response.data);
+  }
   ApiClient._internal();
 }

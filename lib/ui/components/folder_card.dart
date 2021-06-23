@@ -20,7 +20,8 @@ class _FolderCardState extends State<FolderCard> {
             Row(
               children: [
                 CircleAvatar(
-                  child: Icon(Icons.folder),
+                  backgroundColor: Colors.green.shade700,
+                  child: Icon(Icons.folder,color: Colors.white,),
                 ),
                 Expanded(
                     child: Container(
