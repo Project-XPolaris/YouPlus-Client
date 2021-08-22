@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:youplus/api/app.dart';
 import 'package:youplus/api/auth.dart';
 import 'package:youplus/api/base.dart';
+import 'package:youplus/api/disk_list_response.dart';
 import 'package:youplus/api/folder.dart';
 import 'package:youplus/api/info.dart';
 
@@ -88,6 +89,10 @@ class ApiClient {
   Future<NasInfo> fetchNasInfo() async {
     var response = await _dio.get("/device/info");
     return NasInfo.fromJson(response.data);
+  }
+  Future<DiskListResponse> fetchDiskList() async{
+    var response = await _dio.get("/disks");
+    return DiskListResponse.fromJson(response.data);
   }
   ApiClient._internal();
 }

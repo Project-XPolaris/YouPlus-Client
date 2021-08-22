@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youplus/ui/components/info_card.dart';
+import 'package:youplus/ui/home/pages/disks/index.dart';
 import 'package:youplus/ui/home/pages/index/provider.dart';
 
 class HomeIndex extends StatefulWidget {
-
   const HomeIndex({Key? key}) : super(key: key);
 
   @override
@@ -53,7 +53,9 @@ class _HomeIndexState extends State<HomeIndex> {
                     ],
                   ),
                 ),
-                Divider(height: 1,),
+                Divider(
+                  height: 1,
+                ),
                 EntryItem(
                   icon: Icon(
                     Icons.apps,
@@ -62,11 +64,11 @@ class _HomeIndexState extends State<HomeIndex> {
                   ),
                   primary: "Apps",
                   desc: "${provider.nasInfo?.appCount ?? 0} apps installed",
-                  onClick: (){
-
-                  },
+                  onClick: () {},
                 ),
-                Divider(height: 1,),
+                Divider(
+                  height: 1,
+                ),
                 EntryItem(
                   icon: Icon(
                     Icons.person,
@@ -76,7 +78,9 @@ class _HomeIndexState extends State<HomeIndex> {
                   primary: "Users",
                   desc: "${provider.nasInfo?.userCount ?? 0} users",
                 ),
-                Divider(height: 1,),
+                Divider(
+                  height: 1,
+                ),
                 EntryItem(
                     icon: Icon(
                       Icons.storage,
@@ -85,7 +89,9 @@ class _HomeIndexState extends State<HomeIndex> {
                     ),
                     primary: "Storage",
                     desc: "${provider.nasInfo?.storageCount ?? 0} storage"),
-                Divider(height: 1,),
+                Divider(
+                  height: 1,
+                ),
                 EntryItem(
                     icon: Icon(
                       Icons.dns,
@@ -94,16 +100,27 @@ class _HomeIndexState extends State<HomeIndex> {
                     ),
                     primary: "ZFS",
                     desc: "${provider.nasInfo?.zfsCount ?? 0} zfs pool"),
-                Divider(height: 1,),
+                Divider(
+                  height: 1,
+                ),
                 EntryItem(
-                    icon: Icon(
-                      Icons.data_usage,
-                      size: 32,
-                      color: Colors.indigo,
-                    ),
-                    primary: "Disks",
-                    desc: "${provider.nasInfo?.diskCount ?? 0} disks"),
-                Divider(height: 1,),
+                  icon: Icon(
+                    Icons.data_usage,
+                    size: 32,
+                    color: Colors.indigo,
+                  ),
+                  primary: "Disks",
+                  desc: "${provider.nasInfo?.diskCount ?? 0} disks",
+                  onClick: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DiskListPage()),
+                    );
+                  },
+                ),
+                Divider(
+                  height: 1,
+                ),
                 EntryItem(
                     icon: Icon(
                       Icons.folder,
@@ -111,7 +128,8 @@ class _HomeIndexState extends State<HomeIndex> {
                       color: Colors.pink,
                     ),
                     primary: "Share folder",
-                    desc: "${provider.nasInfo?.shareFolderCount ?? 0} share folders")
+                    desc:
+                        "${provider.nasInfo?.shareFolderCount ?? 0} share folders")
               ],
             ),
           );
@@ -124,8 +142,13 @@ class EntryItem extends StatelessWidget {
   final String primary;
   final String desc;
   final Function()? onClick;
+
   const EntryItem(
-      {Key? key, required this.icon, required this.primary, required this.desc,this.onClick})
+      {Key? key,
+      required this.icon,
+      required this.primary,
+      required this.desc,
+      this.onClick})
       : super(key: key);
 
   @override
@@ -133,7 +156,11 @@ class EntryItem extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        onTap: (){},
+        onTap: () {
+          if (this.onClick != null) {
+            this.onClick!();
+          }
+        },
         child: Container(
           padding: EdgeInsets.all(16),
           child: Row(

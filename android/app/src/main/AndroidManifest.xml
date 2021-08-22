@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.projectxpolaris.youplus">
    <application
-        android:label="youplus"
+        android:label="YouPlus"
        android:usesCleartextTraffic="true"
         android:icon="@mipmap/launcher_icon">
         <activity

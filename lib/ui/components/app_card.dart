@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppCard extends StatefulWidget {
   final String name;
   final String status;
-  final String id;
+  final int id;
   final Function onStop;
   final Function onStart;
   const AppCard({Key? key,required this.name,required this.status,required this.onStop,required this.onStart,required this.id}) : super(key: key);
@@ -34,7 +34,7 @@ class _AppCardState extends State<AppCard> {
                         style: TextStyle(
                             fontWeight: FontWeight.w500, fontSize: 18),
                       ),
-                      Text(widget.id,style: TextStyle(color: Colors.black54),)
+                      Text(widget.id.toString(),style: TextStyle(color: Colors.black54),)
                     ])),
                 PopupMenuButton<String>(
                   onSelected: (String result) {

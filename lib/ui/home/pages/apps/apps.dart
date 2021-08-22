@@ -19,7 +19,7 @@ class _HomeAppsState extends State<HomeApps> {
         child: Consumer<HomeAppsProvider>(builder: (context, provider, child) {
           provider.refreshApps();
           Size size = MediaQuery.of(context).size;
-          onStartApp(String id) async {
+          onStartApp(int id) async {
             BaseResponse response = await provider.startApp(id);
             if (response.success) {
               ScaffoldMessenger.of(context)
@@ -30,7 +30,7 @@ class _HomeAppsState extends State<HomeApps> {
             }
           }
 
-          onStopApp(String id) async {
+          onStopApp(int id) async {
             BaseResponse response = await provider.stopApp(id);
             if (response.success) {
               ScaffoldMessenger.of(context)
