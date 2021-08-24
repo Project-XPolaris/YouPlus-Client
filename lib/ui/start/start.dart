@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 import 'package:youplus/api/base.dart';
 import 'package:youplus/api/client.dart';
 import 'package:youplus/ui/home/home.dart';
@@ -20,25 +20,49 @@ class _StartPageState extends State<StartPage> {
   String inputUsername = "";
   String inputPassword = "";
   String loginMode = "history";
+  bool isAuthMode = false;
+  static const _methodMessageChannel = MethodChannel("authplugin");
 
   Future<bool> _init() async {
     await LoginHistoryManager().refreshHistory();
+    isAuthMode = await _methodMessageChannel.invokeMethod("isAuthMode");
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    _onFinishClick() async {
-      var uri = Uri.parse(inputUrl);
+    bool _applyUrl() {
+      if (inputUrl.isEmpty) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("please input service url")));
+        return false;
+      }
+      var uri;
+      try {
+        uri = Uri.parse(inputUrl);
+      } on FormatException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("input service url invalidate")));
+        return false;
+      }
       if (!uri.hasScheme) {
         inputUrl = "http://" + inputUrl;
       }
       if (!uri.hasPort) {
-        inputUrl += ":8999";
+        inputUrl += ":7700";
       }
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      sharedPreferences.setString("apiUrl", inputUrl);
+      ApplicationConfig().serviceUrl = inputUrl;
+      return true;
+    }
+    _appAuth(String username, String token) {
+      _methodMessageChannel.invokeMethod(
+          "authApp", {"username": username, "token": token});
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    }
+    _onFinishClick() async {
+      if (!_applyUrl()) {
+        return;
+      }
       await ApplicationConfig().loadConfig();
       // login with account
       var response = await ApiClient().userAuth(inputUsername, inputPassword);
@@ -47,6 +71,10 @@ class _StartPageState extends State<StartPage> {
         ApplicationConfig().username = inputUsername;
         LoginHistoryManager().add(LoginHistory(
             apiUrl: inputUrl, username: inputUsername, token: response.token));
+        if (isAuthMode) {
+          _appAuth(inputUsername, response.token);
+          return;
+        }
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));
       }
@@ -59,6 +87,10 @@ class _StartPageState extends State<StartPage> {
       config.username = history.username;
       BaseResponse response = await ApiClient().checkToken(history.token);
       if (response.success) {
+        if (isAuthMode) {
+          _appAuth(history.username, history.token);
+          return;
+        }
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));
       } else {
@@ -71,13 +103,6 @@ class _StartPageState extends State<StartPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        onPressed: () {
-          _onFinishClick();
-        },
-        child: Icon(Icons.chevron_right,color: Colors.white,),
       ),
       body: FutureBuilder(
           future: _init(),
@@ -101,108 +126,163 @@ class _StartPageState extends State<StartPage> {
                         margin: EdgeInsets.only(bottom: 72),
                         child: Text(
                           "from ProjectXPolaris",
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color:
+                              isAuthMode ? Colors.green : Colors.black87),
                         ),
                       ),
                       Expanded(
                           child: DefaultTabController(
-                        length: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 240,
-                              margin: EdgeInsets.only(bottom: 16),
-                              child: TabBar(
-                                  tabs: [
-                                Tab(
-                                  child: Text(
-                                    "History",
-                                    style: TextStyle(color: Colors.black87),
+                            length: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 240,
+                                  margin: EdgeInsets.only(bottom: 16),
+                                  child: TabBar(
+                                    tabs: [
+                                      Tab(
+                                        child: Text(
+                                          "History",
+                                          style: TextStyle(
+                                              color: Colors.black87),
+                                        ),
+                                      ),
+                                      Tab(
+                                        child: Text("New",
+                                            style:
+                                            TextStyle(color: Colors.black87)),
+                                      )
+                                    ],
+                                    indicatorColor: Colors.green,
                                   ),
                                 ),
-                                Tab(
-                                  child: Text("New",
-                                      style: TextStyle(color: Colors.black87)),
-                                )
-                              ],indicatorColor: Colors.green,),
-                            ),
-                            Expanded(
-                                child: TabBarView(
-                              children: [
-                                ListView(
-                                  children:
-                                      LoginHistoryManager().list.map((history) {
-                                    return Container(
-                                      margin: EdgeInsets.only(bottom: 8),
-                                      child: ListTile(
-                                        onTap: () {
-                                          _onLoginHistoryClick(history);
-                                        },
-                                        leading: CircleAvatar(
-                                          backgroundColor: Colors.green.shade800,
-                                          child: Icon(Icons.person,color: Colors.white,),
+                                Expanded(
+                                    child: TabBarView(
+                                      children: [
+                                        ListView(
+                                          children:
+                                          LoginHistoryManager().list.map((
+                                              history) {
+                                            return Container(
+                                              margin: EdgeInsets.only(
+                                                  bottom: 8),
+                                              child: ListTile(
+                                                onTap: () {
+                                                  _onLoginHistoryClick(history);
+                                                },
+                                                leading: CircleAvatar(
+                                                  backgroundColor:
+                                                  Colors.green.shade800,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                title: Text(history.username),
+                                                subtitle: Text(history.apiUrl),
+                                              ),
+                                            );
+                                          }).toList(),
                                         ),
-                                        title: Text(history.username),
-                                        subtitle: Text(history.apiUrl),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                                ListView(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 16,left: 16),
-                                      child: TextField(
-                                        onChanged: (text) {
-                                          setState(() {
-                                            inputUrl = text;
-                                          });
-                                        },
-                                        cursorColor: Colors.green,
-                                        decoration: InputDecoration(
-                                          hintText: "Service URL"
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 16,right: 16,left: 16),
-                                      child: TextField(
-                                        onChanged: (text) {
-                                          setState(() {
-                                            inputUsername = text;
-                                          });
-                                        },
-                                        cursorColor: Colors.green,
-                                        decoration: InputDecoration(
-                                            hintText: "Username"
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 16,right: 16,left: 16),
-                                      child: TextField(
-                                        enableSuggestions: false,
-                                        autocorrect: false,
-                                        obscureText: true,
-                                        onChanged: (text) {
-                                          setState(() {
-                                            inputPassword = text;
-                                          });
-                                        },
-                                        cursorColor: Colors.green,
-                                        decoration: InputDecoration(
-                                            hintText: "Password"
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                                        ListView(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 16, left: 16),
+                                              child: TextField(
+                                                onChanged: (text) {
+                                                  setState(() {
+                                                    inputUrl = text;
+                                                  });
+                                                },
+                                                cursorColor: Colors.green,
+                                                decoration: InputDecoration(
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.green,
+                                                        width: 1.0),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black12,
+                                                        width: 1.0),
+                                                  ),
+                                                  hintText: 'Service url',
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 16, right: 16, left: 16),
+                                              child: TextField(
+                                                onChanged: (text) {
+                                                  setState(() {
+                                                    inputUsername = text;
+                                                  });
+                                                },
+                                                cursorColor: Colors.green,
+                                                decoration: InputDecoration(
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.green,
+                                                        width: 1.0),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black12,
+                                                        width: 1.0),
+                                                  ),
+                                                  hintText: 'Username',
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 16, right: 16, left: 16),
+                                              child: TextField(
+                                                enableSuggestions: false,
+                                                autocorrect: false,
+                                                obscureText: true,
+                                                onChanged: (text) {
+                                                  setState(() {
+                                                    inputPassword = text;
+                                                  });
+                                                },
+                                                cursorColor: Colors.green,
+                                                decoration: InputDecoration(
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.green,
+                                                        width: 1.0),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black12,
+                                                        width: 1.0),
+                                                  ),
+                                                  hintText: 'Password',
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.only(
+                                                  top: 16, right: 16, left: 16),
+                                              child: ElevatedButton(
+                                                child: Text("Login"),
+                                                onPressed: _onFinishClick,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ))
                               ],
-                            ))
-                          ],
-                        ),
-                      ))
+                            ),
+                          ))
                     ],
                   ),
                 ),

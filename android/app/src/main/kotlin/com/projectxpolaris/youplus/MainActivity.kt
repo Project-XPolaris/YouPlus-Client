@@ -12,5 +12,12 @@ class MainActivity: FlutterActivity() {
                     ?.apply { isAccessible = true }
                     ?.setInt(this, Color.TRANSPARENT)
         }
+        flutterEngine?.plugins?.apply {
+            add(AuthPlugin())
+        }
+        if (intent.action == "com.projectxpolaris.AUTH_LOGIN") {
+            AppConfig.authMode = true
+            AppConfig.authCallback = intent.getStringExtra("CALLBACK") ?: ""
+        }
     }
 }

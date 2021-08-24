@@ -29,6 +29,10 @@
               android:resource="@drawable/launch_background"
               />
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.projectxpolaris.AUTH_LOGIN" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
