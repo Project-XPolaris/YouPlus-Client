@@ -39,6 +39,7 @@ class ApiClient {
     var response = await _dio.post("/admin/auth",data: {
       "username":username,"password":password
     });
+    print(response.data);
     UserAuthResponse authResponse = UserAuthResponse.fromJson(response.data);
     return authResponse;
   }

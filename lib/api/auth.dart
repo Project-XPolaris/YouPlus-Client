@@ -1,9 +1,11 @@
 class UserAuthResponse {
-  late bool success;
-  late String token;
+  bool success = false;
+  String? token;
+  String? reason;
   UserAuthResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     token = json['token'];
+    reason = json['reason'];
   }
   UserAuthResponse(this.success, this.token);
 }
