@@ -65,14 +65,13 @@ class _StartPageState extends State<StartPage> {
       if (!_applyUrl()) {
         return;
       }
-      print(ApplicationConfig().serviceUrl);
       // login with account
       var response = await ApiClient().userAuth(inputUsername, inputPassword);
       if (response.success) {
         ApplicationConfig().token = response.token;
         ApplicationConfig().username = inputUsername;
         LoginHistoryManager().add(LoginHistory(
-            apiUrl: inputUrl, username: inputUsername, token: response.token!));
+            apiUrl: ApplicationConfig().serviceUrl ?? "", username: inputUsername, token: response.token!));
         if (isAuthMode) {
           _appAuth(inputUsername, response.token!);
           return;
@@ -91,7 +90,7 @@ class _StartPageState extends State<StartPage> {
       config.serviceUrl = history.apiUrl;
       config.username = history.username;
       BaseResponse response =
-          await ApiClient().checkToken(history.token + "1234");
+          await ApiClient().checkToken(history.token);
       if (response.success) {
         if (isAuthMode) {
           _appAuth(history.username, history.token);
